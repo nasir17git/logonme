@@ -1,6 +1,6 @@
 # variable 사전 입력
 variable "name_prefix" { default = "logonme" }
-variable "env" { default = "init" }
+variable "env" { default = "init2" }
 variable "vpc_cidr" { default = "10.0.0.0/16" }
 variable "pub_subnet_cidrs" {
   default = {
