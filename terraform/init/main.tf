@@ -3,7 +3,7 @@ terraform {
   cloud {
     organization = "logonme"
     workspaces {
-      name = "init"
+      name = "terraform-init"
     }
   }
 
