@@ -1,0 +1,16 @@
+repos:
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.77.1 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
+  hooks:
+    - id: terraform_fmt # terraform fmt 명령어 수행
+    - id: terraform_validate # terraform validate 명령어 수행
+    - id: terraform_docs # 구성된 테라폼 input, output을 정리하여 README.md 작성 및 업데이트
+      args:
+        - --hook-config=--path-to-file=README.md
+        - --hook-config=--add-to-existing-file=true
+        - --hook-config=--create-file-if-not-exist=true
+    - id: infracost_breakdown # 현재 디렉토리의 테라폼 코드 기반 비용 분석
+      verbose: true # 항상 비용 표시
+      args:
+        - --args=--path=.
+        - --hook-config='.currency == "KRW"'
