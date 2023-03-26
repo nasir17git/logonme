@@ -1,3 +1,4 @@
+fail_fast: true
 repos:
 - repo: https://github.com/antonbabenko/pre-commit-terraform
   rev: v1.77.1 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
@@ -12,5 +13,4 @@ repos:
     - id: infracost_breakdown # 현재 디렉토리의 테라폼 코드 기반 비용 분석
       verbose: true # 항상 비용 표시
       args:
-        - --args=--path=.
-        - --hook-config='.currency == "KRW"'
+        - --args=--path=./terraform/1lb2ec2+1nat
