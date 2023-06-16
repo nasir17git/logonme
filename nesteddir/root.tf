@@ -1,4 +1,4 @@
 resource "random_string" "root" {
-  length  = 13
+  length  = 11
   special = true
 }
