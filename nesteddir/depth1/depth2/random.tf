@@ -1,4 +1,4 @@
-resource "random_string" "depth1" {
+resource "random_string" "depth2" {
   length  = 10
   special = true
 }
