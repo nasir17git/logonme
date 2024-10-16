@@ -1,0 +1,16 @@
+# ipaddrpool.yaml (metallb cidr range)
+# kubectl apply -f deploy/addons/base/network/metallb/ipaddr.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: dev-k8s-ipaddrpool
+  namespace: kube-system
+spec:
+  addresses:
+    - 10.100.0.0/24
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: layer2
+  namespace: kube-system

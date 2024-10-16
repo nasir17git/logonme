@@ -1,0 +1,40 @@
+# https://artifacthub.io/packages/helm/argo/argo-cd/5.52.2
+# helm repo add argo https://argoproj.github.io/argo-helm
+# helm install argocd argo/argo-cd -n argocd -f deploy/addons/base/argo/argocd/argocd-values.yaml --version 5.52.2
+# repo-secret.yaml에 토큰 입력 후 kubectl apply -f repo-secret.yaml -n argocd
+
+fullnameOverride: argocd
+
+# https://github.com/argoproj/argo-cd/issues/9809#issuecomment-1351488935
+repoServer:
+  containerSecurityContext:
+    seccompProfile:
+      type: Unconfined
+
+configs:
+  cm:
+    resource.exclusions: |
+      - apiGroups:
+          - cilium.io
+        kinds:
+          - CiliumIdentity
+        clusters:
+          - "*"
+    kustomize.buildOptions: --enable-helm=true
+
+    # https://argo-cd.readthedocs.io/en/stable/faq/#how-often-does-argo-cd-check-for-changes-to-my-git-or-helm-repository
+    timeout.reconciliation: 60s
+    timeout.hard.reconciliation: 60s
+
+  params:
+    server.insecure: true
+  secret:
+    # -- Bcrypt hashed admin password
+    ## Argo expects the password in the secret to be bcrypt hashed. You can create this hash with
+    ## `htpasswd -nbBC 10 "" $ARGO_PWD | tr -d ':\n' | sed 's/$2y/$2a/'`
+    # ID admin / PW admin
+    argocdServerAdminPassword: $2a$10$3hdN5F7.6oTuSY9nScWBi.WtOKbe8dyO6EjW.8AWLXR2z2E96NU4a
+
+server:
+  service:
+    type: LoadBalancer

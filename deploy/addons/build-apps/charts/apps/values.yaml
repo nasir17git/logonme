@@ -1,0 +1,8 @@
+repoURL: ""
+
+apps:
+  - name: apps
+    namespace: argocd
+    path: apps
+    targetRevision: master
+    syncWave: -4
