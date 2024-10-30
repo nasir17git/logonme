@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: petclinic
-        image: petclinic
+        image: quay.io/solo-io/petclinic:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
