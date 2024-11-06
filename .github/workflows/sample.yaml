@@ -1,6 +1,11 @@
 name: sample
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on: 
+  workflow_dispatch:
+    inputs:
+      GO:
+        type: string
+                
 jobs:
   Explore-GitHub-Actions:
     runs-on: test-hosted
