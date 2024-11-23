@@ -1,0 +1,51 @@
+
+name: action-runner-build
+run-name: self-hosted runner image build
+
+on:
+  workflow_dispatch:
+    inputs:
+      BUILD_MACHINE:
+        description: '빌드를 진행할 머신을 선택해주세요(택1)'
+        type: choice
+        default: k8s-hosted
+        options:
+          - k8s-hosted
+          - ubuntu-latest
+      BASE_IMAGE_VERSION:
+        description: ghcr.io/actions/actions-runner의 버전 입력. 기본값 latest
+        type: string
+        default: latest
+
+jobs:
+  build_runner_image:
+    runs-on: ${{ inputs.BUILD_MACHINE }}
+    steps:
+      - name: get sha_short
+        run: |
+          echo "sha_short=`echo ${{github.sha}} | cut -c1-7`" >> $GITHUB_ENV
+
+      - name: checkout src
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: build & push
+        run: |
+          sed -i 's/__BASE_IMAGE_VERSION__/${{ inputs.BASE_IMAGE_VERSION }}/g' dockerfile
+          docker build . -t nasir17/gha-demo:${{env.sha_short}}
+        
+      - name: make debug-session
+        if: ${{ failure() || inputs.debug == 'true' }}
+        run: |
+          screen -dmS debug bash
+          echo "Debug session started. To end normally, create /tmp/end_debug file."
+          echo "Runner name: ${{ runner.name }}"
+          echo "To connect: screen -r debug"
+          echo "To end : touch /tmp/end_debug"
+          while [ ! -f /tmp/end_debug ]; do sleep 10; done
+          echo "Debug session ended normally."
