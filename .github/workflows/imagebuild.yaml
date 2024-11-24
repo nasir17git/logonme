@@ -3,6 +3,7 @@ name: action-runner-build
 run-name: self-hosted runner image build
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       BUILD_MACHINE:
@@ -21,10 +22,6 @@ jobs:
   build_runner_image:
     runs-on: ${{ inputs.BUILD_MACHINE }}
     steps:
-      - name: get sha_short
-        run: |
-          echo "sha_short=`echo ${{github.sha}} | cut -c1-7`" >> $GITHUB_ENV
-
       - name: checkout src
         uses: actions/checkout@v4
 
@@ -37,7 +34,7 @@ jobs:
       - name: build & push
         run: |
           sed -i 's/__BASE_IMAGE_VERSION__/${{ inputs.BASE_IMAGE_VERSION }}/g' dockerfile
-          docker build . -t nasir17/gha-demo:${{env.sha_short}}
+          docker build . -t nasir17/gha-demo:latest
         
       - name: make debug-session
         if: ${{ failure() || inputs.debug == 'true' }}
