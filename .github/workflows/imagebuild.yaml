@@ -3,7 +3,6 @@ name: action-runner-build
 run-name: self-hosted runner image build
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       BUILD_MACHINE:
