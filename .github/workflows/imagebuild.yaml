@@ -16,7 +16,11 @@ on:
         description: ghcr.io/actions/actions-runner의 버전 입력. 기본값 latest
         type: string
         default: latest
-
+      DEBUG:
+        description: 'debug 세션 활성화'
+        type: boolean
+        required: false
+        
 jobs:
   build_runner_image:
     runs-on: ${{ inputs.BUILD_MACHINE }}
@@ -33,10 +37,16 @@ jobs:
       - name: build & push
         run: |
           sed -i 's/__BASE_IMAGE_VERSION__/${{ inputs.BASE_IMAGE_VERSION }}/g' dockerfile
-          docker build . -t nasir17/gha-demo:latest
+          docker build . -t nasir17/gha-demo:latest --push
         
+      - name: trigger error
+        run: |
+          echo "ERROR!" > ./error.text && pwd
+          ERROR=true
+          false
+
       - name: make debug-session
-        if: ${{ failure() || inputs.debug == 'true' }}
+        if: ${{ failure() || inputs.DEBUG == 'true' }}
         run: |
           screen -dmS debug bash
           echo "Debug session started. To end normally, create /tmp/end_debug file."
