@@ -16,6 +16,10 @@ on:
         description: ghcr.io/actions/actions-runner의 버전 입력. 기본값 latest
         type: string
         default: latest
+      DEBUG:
+        description: 'debug 세션 활성화'
+        type: boolean
+        required: false
 
 jobs:
   create-tool-cache:
@@ -52,7 +56,7 @@ jobs:
           retention-days: 1
           path: ${{runner.tool_cache}}/tool_cache.tar.gz
 
-build-with-tool-cache:
+  build-with-tool-cache:
     runs-on:  ${{ inputs.BUILD_MACHINE }}
     needs: create-tool-cache
     env:
