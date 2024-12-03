@@ -15,6 +15,10 @@ on:
         description: ghcr.io/actions/actions-runner의 버전 입력. 기본값 latest
         type: string
         default: latest
+      DEBUG:
+        description: 'debug 세션 활성화'
+        type: boolean
+        required: false
 
 jobs:
   build_runner_image:
@@ -41,3 +45,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+
+      - name: make debug-session
+        if: ${{ failure() || inputs.DEBUG == 'true' }}
+        run: |
+          screen -dmS debug bash
+          echo "Debug session started. To end normally, create /tmp/end_debug file."
+          echo "Runner name: ${{ runner.name }}"
+          echo "To connect: screen -r debug"
+          echo "To end : touch /tmp/end_debug"
+          while [ ! -f /tmp/end_debug ]; do sleep 10; done
+          echo "Debug session ended normally."
