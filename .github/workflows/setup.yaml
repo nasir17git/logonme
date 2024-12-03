@@ -28,11 +28,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Setup Node 16
-        uses: actions/setup-node@v4
+      - name: Setup python 3.13
+        uses: actions/setup-python@v4
         with:
-          node-version: 16.x
+          python-version: '3.13' 
       - name: Setup Node 18
         uses: actions/setup-node@v4
         with:
@@ -41,4 +40,4 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '11'
