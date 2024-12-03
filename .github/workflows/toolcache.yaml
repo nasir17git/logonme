@@ -3,7 +3,6 @@ name: tool-cache
 run-name: tool-cache-
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       BUILD_MACHINE:

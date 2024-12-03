@@ -2,7 +2,6 @@
 name: setup-time-calcul
 
 on:
-  push:
   workflow_dispatch:
     inputs:
       BUILD_MACHINE:
