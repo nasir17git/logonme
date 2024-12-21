@@ -2,4 +2,10 @@ FROM ghcr.io/actions/actions-runner:__BASE_IMAGE_VERSION__
 
 ENV ACTIONS_TOOL_CACHE=/home/runner/actions-tool-cache
 COPY --link --chown=1001:123 tools $ACTIONS_TOOL_CACHE
-RUN sudo apt-get install -y --no-install-recommends screen vim
+
+RUN sudo apt update \
+    && sudo apt-get install -y --no-install-recommends screen vim
+
+# cleanup cache
+RUN sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
