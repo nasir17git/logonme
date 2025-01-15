@@ -1,0 +1,33 @@
+# kaf deploy/apps/petclinic/petclinic-mac.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-petclinic
+spec:
+  selector:
+    matchLabels:
+      app: spring-petclinic
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spring-petclinic
+    spec:
+      containers:
+      - name: app
+        image: signoz/spring-petclinic
+        ports:
+        - containerPort: 8090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-petclinic
+spec:
+  type: LoadBalancer
+  selector:
+    app: spring-petclinic
+  ports:
+  - protocol: TCP
+    port: 8090
+    targetPort: 8080
