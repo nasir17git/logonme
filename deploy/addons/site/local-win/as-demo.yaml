@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: guestbook
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - list:
+      elements:
+      - cluster: win
+        url: https://kubernetes.default.svc
+      # - cluster: kind
+      #   url: https://kubernetes.default.svc
+      # - cluster: finance-preprod
+      #   url: https://kubernetes.default.svc
+  template:
+    metadata:
+      name: 'petclinc-{{.cluster}}'
+    spec:
+      project: apps
+      source:
+        repoURL: https://github.com/nasir17git/logonme
+        targetRevision: demo-env
+        path: deploy/apps/'petclinc-{{.cluster}}'
+      destination:
+        server: '{{.url}}'
+        namespace: guestbook
