@@ -1,0 +1,37 @@
+# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+# helm upgrade prometheus prometheus-community/prometheus -f deploy/addons/base/observability/prometheus/prometheus.yaml --version 25.19.1 -n monitoring -i
+# https://artifacthub.io/packages/helm/prometheus-community/prometheus/25.19.1
+
+server:
+  global:
+    scrape_interval: 30s
+    evaluation_interval: 30s
+  retention: "3d"
+  retentionSize: "500MB"
+  
+  extraFlags:
+    - web.enable-lifecycle
+    - web.enable-remote-write-receiver
+    - enable-feature=exemplar-storage
+    - enable-feature=otlp-write-receiver
+  
+  service:
+    type: LoadBalancer
+
+# extraScrapeConfigs: |
+#   - job_name: otel-collector
+#     scrape_interval: 3s
+#     metric_relabel_configs:
+#       - source_labels: [ 'exported_job' ]
+#         action: replace
+#         target_label: 'job'
+#       - action: labeldrop
+#         regex: 'exported_job'
+#     static_configs:
+#       - targets: 
+#         - collector-otel.monitoring:8889
+
+# https://malwareanalysis.tistory.com/613
+kube-state-metrics:
+  metricLabelsAllowlist:
+    - pods=[*]

@@ -2,9 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: guestbook
+  namespace: argocd
 spec:
-  goTemplate: true
-  goTemplateOptions: ["missingkey=error"]
   generators:
   - list:
       elements:
@@ -22,7 +21,7 @@ spec:
       source:
         repoURL: https://github.com/nasir17git/logonme
         targetRevision: demo-env
-        path: deploy/apps/'petclinc-{{.cluster}}'
+        path: 'deploy/apps/petclinc-{{.cluster}}'
       destination:
         server: '{{.url}}'
         namespace: guestbook

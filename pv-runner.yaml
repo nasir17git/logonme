@@ -1,0 +1,45 @@
+# helm upgrade pv-runner oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set -f ./pv-runner.yaml --version 0.9.3 -n arc-systems -i
+
+# runner group을 연결할 github repository/organization 등록
+githubConfigUrl: https://github.com/nasir17git/logonme
+githubConfigSecret: arc-ghp-token
+  #github_token: "ghp_aaa" //직접 토큰값을 넣을경우
+
+# 유지할 Runner 수 설정
+maxRunners: 2
+minRunners: 1
+
+controllerServiceAccount:
+  namespace: arc-system
+  name: arc-controller-gha-rs-controller
+
+containerMode:
+  type: "dind" 
+
+template:
+  spec:
+    containers:
+      - name: runner
+        image: nasir17/gha-demo:latest
+        command: ["/home/runner/run.sh"]
+    # hostmachine의 directory
+    volumes:
+    - name: runner-pv
+      hostPath:
+        type: DirectoryOrCreate
+        path: /data/runner
+    - name: docker-pv
+      hostPath:
+        type: DirectoryOrCreate
+        path: /data/docker
+    topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          actions.github.com/scale-set-name: pv-runner
+      maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule

@@ -1,0 +1,65 @@
+# helm repo add grafana https://grafana.github.io/helm-charts
+# helm upgrade tempo grafana/tempo-distributed --version 1.8.5 -n monitoring -f deploy/addons/base/observability/tempo/tempo.yaml -i
+# helm install my-tempo-distributed grafana/tempo-distributed --version 1.8.5
+# https://artifacthub.io/packages/helm/grafana/tempo-distributed/1.8.5
+
+traces:
+  otlp:
+    # 4318
+    http:
+      enabled: true
+    # 4317
+    grpc:
+      enabled: true
+
+distributor:
+  config:
+    log_received_spans:
+      enabled: true
+      include_all_attributes: true
+      filter_by_status_error: true
+
+ingester:
+  # config:
+  #   max_block_duration: 5m
+  persistence:
+    enabled: true
+    size: 3Gi
+
+# compactor:
+#   config:
+#     compaction:
+#       block_retention: 1h
+
+metricsGenerator:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 5Gi
+  config:
+    registry:
+      external_labels: 
+        source: tempo
+        cluster: dev-k8s
+    processor:
+      span_metrics:
+        dimensions: ['correlation_id', 'start_time_ms', 'end_time_ms']
+    traces_storage:
+      path: /var/tempo/traces
+    storage:
+      path: /var/tempo/wal
+      remote_write:
+        - url: http://prometheus-server.monitoring:80/api/v1/write
+          name: prometheus_remote_write_tempo
+          send_exemplars: true
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/traces
+
+global_overrides:
+  metrics_generator_processors: [ local-blocks, service-graphs, span-metrics ]

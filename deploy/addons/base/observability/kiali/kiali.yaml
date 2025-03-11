@@ -1,0 +1,37 @@
+# helm repo add kiali https://kiali.org/helm-charts
+# helm upgrade kiali kiali/kiali-server --version 1.85.0 -f deploy/addons/base/observability/kiali/kiali.yaml -n monitoring -i
+# helm show values kiali/kiali-server > kiali-server-default-vaules.yaml
+# https://artifacthub.io/packages/helm/kiali/kiali-server/1.85.0
+
+istio_namespace: istio-system
+
+deployment:
+  service_type: LoadBalancer
+
+auth:
+  strategy: "anonymous"
+
+external_services:
+  custom_dashboards:
+    enabled: true
+  istio:
+    root_namespace: istio-system
+  prometheus:
+    url: "http://prometheus-server.monitoring:80/"
+  grafana:
+    enabled: true
+    # Grafana service name is "grafana" and is in the "telemetry" namespace.
+    in_cluster_url: 'http://grafana.monitoring:80/'
+    dashboards:
+    - name: "Istio Service Dashboard"
+      variables:
+        namespace: "var-namespace"
+        service: "var-service"
+    - name: "Istio Workload Dashboard"
+      variables:
+        namespace: "var-namespace"
+        workload: "var-workload"
+    - name: "Istio Mesh Dashboard"
+    - name: "Istio Control Plane Dashboard"
+    - name: "Istio Performance Dashboard"
+    - name: "Istio Wasm Extension Dashboard"

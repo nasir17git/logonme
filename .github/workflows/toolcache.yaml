@@ -87,7 +87,7 @@ jobs:
       - name: build & push
         run: |
           sed -i 's/__BASE_IMAGE_VERSION__/${{ inputs.BASE_IMAGE_VERSION }}/g' tool-cache
-          docker build . -f tool-cache -t nasir17/gha-demo:latest
+          docker build . -f tool-cache -t nasir17/gha-demo:latest --push
         
       - name: make debug-session
         if: ${{ failure() || inputs.debug == 'true' }}

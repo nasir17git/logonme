@@ -1,0 +1,20 @@
+# helm upgrade k8s-runner oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set -f ./arc-runner-values.yaml --version 0.9.3 -n arc-systems -i
+
+# runner group을 연결할 github repository/organization 등록
+githubConfigUrl: https://github.com/nasir17git/logonme
+githubConfigSecret: arc-ghp-token
+  #github_token: "ghp_aaa" //직접 토큰값을 넣을경우
+
+# 유지할 Runner 수 설정
+maxRunners: 2
+minRunners: 1
+
+containerMode:
+  type: "dind" 
+
+template:
+  spec:
+    containers:
+      - name: runner
+        image: nasir17/gha-demo:latest
+        command: ["/home/runner/run.sh"]

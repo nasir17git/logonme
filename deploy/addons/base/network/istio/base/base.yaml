@@ -1,0 +1,7 @@
+# helm repo add istio https://istio-release.storage.googleapis.com/charts
+# helm upgrade istio-base istio/base -n istio-system --version 1.20.2 -f deploy/addons/base/network/istio/base/base.yaml -i
+# https://artifacthub.io/packages/helm/istio-official/base/1.20.2
+
+defaultRevision: "default"
+global:
+  istioNamespace: istio-system

@@ -68,10 +68,10 @@ nodes:
     hostPort: 30203
   - containerPort: 30204
     hostPort: 30204
-# - role: worker
-#   labels:
-#     mynode: worker3
-#     topology.kubernetes.io/zone: ap-northeast-2c
+- role: worker
+  labels:
+    mynode: worker3
+    topology.kubernetes.io/zone: ap-northeast-2a
 #   extraPortMappings:  #컨테이너 포트를 호스트 포트에 매핑하여 클러스터 외부에서 서비스에 접근할 수 있도록 합니다.
 #   - containerPort: 30300
 #     hostPort: 30300

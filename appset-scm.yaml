@@ -1,0 +1,63 @@
+generators:
+  - matrix
+    generators:
+      - github
+        organization: odysseycloud
+        allBranches: false
+        backend:
+          secretRef: odc-github-token
+          key: password
+          cleartextData: https
+    - list
+      elements:
+        - cluster: demo-syd
+          url: https://xx.xxx.xxx.xxx
+          values:
+            CLIENT_ENVIRONMENT: "{{cluster}}"
+            DEPLOY_ENV: "{{cluster}}"
+            REGION: syd
+            CI_COMMIT_REF_SLUG: "{{ branch }}"
+---
+
+spec:
+  generators:
+    - matrix:
+        generators:
+          - github:
+              organization: odysseycloud
+              allBranches: false
+              tokenRef: 
+                secretName: scm-github-token
+                key: token
+        filters:
+          - pathContains: [short]
+        list:
+          elements:
+            - path: argocharts/cicd
+              revision: "{{ branch }}"
+              values:
+                env: dev
+                cluster: odysseycloud
+                region: syd
+  template:
+    metadata:
+      name: "{{ path.basename }}-{{ values.env }}-{{ branchNormalized }}"
+    spec:
+      project: odysseycloud
+      source:
+        repoURL: "git://..."
+        targetRevision: "{{ branch }}"
+        path: argocharts
+        plugin:
+          name: argocd-vault-plugin-helm
+        values:
+          valuesFile: "values_cluster.yaml"
+      destination:
+        server: "https://k8s"
+        namespace: "{{ path.basename }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

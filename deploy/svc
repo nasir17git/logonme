@@ -1,0 +1,7 @@
+kubectl apply -f https://raw.githubusercontent.com/grafana/docker-otel-lgtm/refs/heads/main/k8s/lgtm.yaml -n monitoring
+
+kubectl port-forward service/lgtm 3000:3000 4317:4317 4318:4318 -n monitoring
+
+http://localhost:3000
+http://localhost:4317
+http://localhost:4318

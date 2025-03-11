@@ -1,0 +1,33 @@
+# arc-controller-values.yaml
+# https://github.com/actions/actions-runner-controller/blob/master/charts/gha-runner-scale-set-controller/values.yaml
+# helm upgrade arc-controller oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller -f ./arc-controller-values.yaml --version 0.9.3 -n arc-systems -i
+
+# HA를 위해 3개의, 노드간 균형 배포 및 controlplane 우선 배포 예시
+replicaCount: 3
+
+# controlplane의 hostname을 value로 지정
+# k get no --show-labels -o wide | grep control-plane | grep hostname
+# affinity: 
+#   nodeAffinity:
+#     preferredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/hostname
+#           operator: In
+#           values:
+#           - nasir-k8s-control-plane
+
+# 일반적으로 control-plane node는 배치 금지를 위한 taints 설정, toleration으로 무시
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+
+# 나머지 worker node에도 이븐하게 배포하기 위해 topologySpreadConstraints 구성
+topologySpreadConstraints: 
+  - labelSelector:
+      matchLabels:
+        app.kubernetes.io/component: controller-manager
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule

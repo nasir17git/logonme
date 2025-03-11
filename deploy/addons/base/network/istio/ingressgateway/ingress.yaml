@@ -1,0 +1,7 @@
+# helm repo add istio https://istio-release.storage.googleapis.com/charts
+# helm upgrade istio-ingressgateway istio/gateway -f deploy/addons/base/network/istio/ingressgateway/ingress.yaml -n istio-system --version 1.19.6 -i
+# https://artifacthub.io/packages/helm/istio-official/gateway/1.19.6
+
+service:
+  # Type of service. Set to "None" to disable the service entirely
+  type: LoadBalancer

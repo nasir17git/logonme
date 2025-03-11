@@ -1,0 +1,53 @@
+# helm repo add istio https://istio-release.storage.googleapis.com/charts
+# helm upgrade istiod istio/istiod -n istio-system --version 1.19.6 -f deploy/addons/base/network/istio/istiod/istiod.yaml
+# https://artifacthub.io/packages/helm/istio-official/istiod/1.19.6
+
+global:
+  proxy:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    # logLevel: info
+    # componentLogLevel: misc:info
+  logging:
+    level: "default:info"
+
+meshConfig:
+  enableTracing: true
+  # defaultConfig:
+  #   tracing:
+  #       zipkin:
+  #         address: 
+  accessLogFile: /dev/stdout
+  extensionProviders:
+  - name: envoy
+    envoyFileAccessLog:
+      path: "/dev/stdout"
+      logFormat:
+        labels:
+          start_time: "%START_TIME%"
+          source_host: "%HOSTNAME%"
+          upstream_host: "%UPSTREAM_HOST%"
+          remote_address: "%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%"
+          user_agent: "%REQ(USER-AGENT)%"
+          host: "%REQ(:AUTHORITY)%"
+          protocol: "%PROTOCOL%"
+          bytes_rcvd: "%BYTES_RECEIVED%"
+          request:
+            request_method: "%REQ(:METHOD)%"
+            request_path: "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+            request_time: "%DURATION%"
+            request_xff: "%REQ(X-FORWARDED-FOR)%"
+            request_id: "%REQ(X-REQUEST-ID)%"
+          response:
+            response_code: "%RESPONSE_CODE%"
+            response_code_details: "%RESPONSE_CODE_DETAILS%"
+            response_bytes_sent: "%BYTES_SENT%"
+            response_flags: "%RESPONSE_FLAGS%"
+            response_time: "%RESPONSE_DURATION%"
+            response_upstream_time: "%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%"
+  - name: otel
+    opentelemetry:
+      service: collector-otel.monitoring.svc.cluster.local
+      port: 4317

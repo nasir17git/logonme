@@ -1,0 +1,81 @@
+spec:
+  generators:
+    - matrix
+      generators:
+        - git
+          repoURL: https://github.com/odysseycloud/argocd-application-bootstrap-demo.git
+          revision: HEAD
+          directories:
+            - path: kube-infra/kustomize/ci-cd/*
+            - path: kube-infra/kustomize/backup/*
+            - path: kube-infra/kustomize/dns-infra/*
+            - path: kube-infra/kustomize/database/*
+            - path: kube-infra/kustomize/observability/*
+            - path: kube-infra/kustomize/security/*
+  template:
+    metadata:
+      name: "{{ path.basename }}"
+    spec:
+      project: odysseycloud
+      source:
+        repoURL: https://github.com/odysseycloud/kubernetes.git
+        targetRevision: HEAD
+        path: "{{path}}/overlays/{{cluster}}"
+      destination:
+        server: "{{ url }}"
+        namespace: "{{ path.basename }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+---
+
+spec:
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/odysseycloud/argocd-applicationset-bootstrap-demo.git
+              revision: HEAD
+              directories:
+                - path: kube-infra/kustomize/cicd/
+                - path: kube-infra/kustomize/backup/
+                - path: kube-infra/kustomize/dns-infra/
+                - path: kube-infra/kustomize/observability/
+                - path: kube-infra/kustomize/security/
+                - path: kube-infra/kustomize/dns-infra/external-dns
+                - path: kube-infra/kustomize/security/
+        list:
+          elements:
+            - clusters: demo-syd
+              url: https://xxx.xxx.xxx
+              values:
+                CLIENT_ENVIRONMENT: "{{cluster}}"
+                DEPLOY_ENV: "{{cluster}}"
+                REGION: syd
+                CI_COMMIT_REF_SLUG: "{{ branch }}"
+  template:
+    metadata:
+      name: "{{ path.basename }}"
+    spec:
+      project: odysseycloud
+      source:
+        repoURL: https://github.com/odysseycloud/kubernetes.git
+        targetRevision: HEAD
+        path: "kpath}/overlays/{{cluster}}/"
+        plugin:
+          name: argocd-vault-plugin-kustomize
+      destination:
+        server: "https://k8s"
+        namespace: "{{ path.basename }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PrunePropagationPolicy=orphan
+          - ApplyOutOfSyncOnly=true
+          - FailOnSharedResource=true

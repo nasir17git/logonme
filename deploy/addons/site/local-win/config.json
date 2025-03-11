@@ -1,0 +1,13 @@
+{
+    "aws_account": "123456",
+    "asset_id": "11223344",
+    "cluster": {
+      "owner": "cluster-admin@company.com",
+      "name": "engineering-dev",
+      "address": "http://1.2.3.4"
+    },
+    "helmChartURL": {
+      "metrics-server": "https://kubernetes-sigs.github.io/metrics-server/",
+      "metallb": "https://metallb.github.io/metallb"
+    }
+  }
